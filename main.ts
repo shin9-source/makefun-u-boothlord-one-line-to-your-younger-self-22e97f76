@@ -18,3 +18,11 @@ if (entry.length < 1 || entry.length > 200 || entry.trim().length === 0) {
   throw new Error(`entry must be 1-200 non-blank characters, got ${entry.length}`);
 }
 writeFileSync("/output/entry.txt", entry, "utf8");
+
+// Post-write check: the written entry must be exactly one line of 1-200 chars.
+const __ysFs = await import("node:fs");
+const __ysOut = __ysFs.readFileSync("/output/entry.txt", "utf8");
+const __ysLines = __ysOut.split("\n").filter((l) => l.length > 0);
+if (__ysLines.length !== 1 || __ysLines[0].length < 1 || __ysLines[0].length > 200) {
+  throw new Error("entry output failed validation");
+}
