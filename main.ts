@@ -26,3 +26,13 @@ const __ysLines = __ysOut.split("\n").filter((l) => l.length > 0);
 if (__ysLines.length !== 1 || __ysLines[0].length < 1 || __ysLines[0].length > 200) {
   throw new Error("entry output failed validation");
 }
+
+// Post-write validation: the emitted entry must exist, be non-empty, and be exactly one line of 1-200 characters.
+import { existsSync as __outExists, readFileSync as __outRead } from "node:fs";
+const __outPath = "/output/entry.txt";
+if (!__outExists(__outPath)) throw new Error("output file missing");
+const __outText = __outRead(__outPath, "utf8");
+if (__outText.length === 0) throw new Error("output file empty");
+const __outLines = __outText.replace(/\n$/, "").split("\n");
+if (__outLines.length !== 1) throw new Error("output must be exactly one line");
+if (__outLines[0].length < 1 || __outLines[0].length > 200) throw new Error("output line length out of range");
